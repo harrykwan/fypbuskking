@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html>
+<title>Busk King</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.bubble.css">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://unpkg.com/ml5@0.5.0/dist/ml5.min.js"></script>
+<style>
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Montserrat", sans-serif
+  }
+
+  .w3-row-padding img {
+    margin-bottom: 12px
+  }
+
+  /* Set the width of the sidebar to 120px */
+  .w3-sidebar {
+    width: 120px;
+    background: #222;
+  }
+
+  /* Add a left margin to the "page content" that matches the width of the sidebar (120px) */
+  #main {
+    margin-left: 120px
+  }
+
+  /* Remove margins from "page content" on small screens */
+  @media only screen and (max-width: 600px) {
+    #main {
+      margin-left: 0
+    }
+  }
+
+  .contactform>p {
+    opacity: .9;
+  }
+
+
+  .search {
+    width: 100px;
+    height: 100px;
+    margin: 40px auto 0;
+    background-color: #242628;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease;
+  }
+
+  .search:before {
+    content: '';
+    display: block;
+    width: 3px;
+    height: 100%;
+    position: relative;
+    /* background-color:white; */
+    transition: all 0.5s ease;
+  }
+
+  .search.open {
+    width: 420px;
+    width: 80%;
+    max-width: 600px;
+  }
+
+  .search.open:before {
+    height: 60px;
+    margin: 20px 0 20px 30px;
+    position: absolute;
+  }
+
+  .search-box {
+    width: 100%;
+    height: 100%;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    color: #fff;
+    padding: 20px 100px 20px 45px;
+    font-size: 30px;
+  }
+
+  .search-box:focus {
+    outline: none;
+  }
+
+  .search-button {
+    width: 100px;
+    height: 100px;
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    cursor: pointer;
+  }
+
+  .search-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    border: 3px solid white;
+    display: block;
+    position: relative;
+    margin-left: 5px;
+    transition: all 0.5s ease;
+  }
+
+  .search-icon:before {
+    content: '';
+    width: 3px;
+    height: 15px;
+    position: absolute;
+    right: -2px;
+    top: 30px;
+    display: block;
+    background-color: white;
+    transform: rotate(-45deg);
+    transition: all 0.5s ease;
+  }
+
+  .search-icon:after {
+    content: '';
+    width: 3px;
+    height: 15px;
+    position: absolute;
+    right: -12px;
+    top: 40px;
+    display: block;
+    background-color: white;
+    transform: rotate(-45deg);
+    transition: all 0.5s ease;
+  }
+
+  .open .search-icon {
+    margin: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 60px;
+  }
+
+  .open .search-icon:before {
+    transform: rotate(52deg);
+    right: 22px;
+    top: 23px;
+    height: 18px;
+  }
+
+  .open .search-icon:after {
+    transform: rotate(-230deg);
+    right: 22px;
+    top: 13px;
+    height: 18px;
+  }
+
+  .searchmobile {
+    display: none;
+    /* padding-left: 7px; */
+    margin-top: 20px;
+    width: 90%;
+  }
+
+  .searchmobile>input {
+    outline: none;
+    background-color: #242628;
+    color: white;
+    border: none;
+    /* border-left: 3px solid white; */
+    padding: 16px;
+    width: 100%;
+  }
+
+
+
+
+  .lds-dual-ring {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+  }
+
+  .lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+  }
+
+  @keyframes lds-dual-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .lds-roller {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    top: -900px;
+    z-index: 999;
+  }
+
+  .lds-roller div {
+    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    transform-origin: 40px 40px;
+  }
+
+  .lds-roller div:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    margin: -4px 0 0 -4px;
+  }
+
+  .lds-roller div:nth-child(1) {
+    animation-delay: -0.036s;
+  }
+
+  .lds-roller div:nth-child(1):after {
+    top: 63px;
+    left: 63px;
+  }
+
+  .lds-roller div:nth-child(2) {
+    animation-delay: -0.072s;
+  }
+
+  .lds-roller div:nth-child(2):after {
+    top: 68px;
+    left: 56px;
+  }
+
+  .lds-roller div:nth-child(3) {
+    animation-delay: -0.108s;
+  }
+
+  .lds-roller div:nth-child(3):after {
+    top: 71px;
+    left: 48px;
+  }
+
+  .lds-roller div:nth-child(4) {
+    animation-delay: -0.144s;
+  }
+
+  .lds-roller div:nth-child(4):after {
+    top: 72px;
+    left: 40px;
+  }
+
+  .lds-roller div:nth-child(5) {
+    animation-delay: -0.18s;
+  }
+
+  .lds-roller div:nth-child(5):after {
+    top: 71px;
+    left: 32px;
+  }
+
+  .lds-roller div:nth-child(6) {
+    animation-delay: -0.216s;
+  }
+
+  .lds-roller div:nth-child(6):after {
+    top: 68px;
+    left: 24px;
+  }
+
+  .lds-roller div:nth-child(7) {
+    animation-delay: -0.252s;
+  }
+
+  .lds-roller div:nth-child(7):after {
+    top: 63px;
+    left: 17px;
+  }
+
+  .lds-roller div:nth-child(8) {
+    animation-delay: -0.288s;
+  }
+
+  .lds-roller div:nth-child(8):after {
+    top: 56px;
+    left: 12px;
+  }
+
+  @keyframes lds-roller {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .editor {
+    /* font-size: 20px; */
+  }
+
+  #keybar {
+    border: 1px solid white;
+    padding: 5px;
+    display: inline-block;
+  }
+
+  #keybar>span {
+    /*background-color: #222222;*/
+    /*color: white;*/
+    font-size: 15px;
+    outline: none;
+    margin-right: 10px;
+    padding: 5px;
+    background: none;
+    /*font-family: 'Righteous', cursive;*/
+    width: 35px;
+    color: #EEE;
+  }
+
+  #keybar>span:hover {
+    background-color: #555;
+    cursor: pointer;
+    /*background-color: grey;*/
+    /* box-shadow: 0px 0px #555; */
+  }
+
+  .keybarselect {
+    border: 1px solid #AAA;
+  }
+
+  .keybarnormal {}
+
+  .originalkey {
+    border: 2px solid white;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  #keybar>span {
+    margin-right: 10px;
+
+  }
+
+  .searchresultarea {
+    /* border-top: 2px solid white; */
+    /* background-color: #242628; */
+    max-width: 600px;
+    width: 80%;
+    text-align: left;
+    padding-left: 30px;
+  }
+
+  .searchresultarea>div {
+    word-wrap: break-word;
+    margin-bottom: 30px;
+
+    padding-left: 10px;
+    color: #757575;
+  }
+
+  .searchresultarea>div:hover {
+    color: white;
+    border-left: 3px solid white;
+    cursor: pointer;
+  }
+
+
+
+  .chorddiv {
+    background-color: #333333;
+    padding: 5px;
+    font-family: 'Roboto', sans-serif;
+    white-space: pre-wrap;
+    /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    margin: 4px 0;
+  }
+
+  .nonchorddiv {
+    padding: 5px;
+    font-family: 'Roboto', sans-serif;
+
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    margin: 4px 0;
+  }
+
+  .emptyline {}
+
+  .tunesizebut {
+    border: 1px solid #EEE;
+    width: 25px;
+    height: 25px;
+    font-size: 15px;
+    margin-right: 5px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .tunesizebut:hover {
+    background-color: #555;
+    cursor: pointer;
+  }
+
+  .previewtopic {
+    font-size: 18px;
+    margin-right: 20px;
+  }
+
+  .nextbutton {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    background: #555;
+
+    text-align: center;
+
+    opacity: .8;
+    display: table;
+    cursor: pointer;
+  }
+
+  .nextbutton>span {
+    vertical-align: middle;
+    display: table-cell;
+    color: white;
+  }
+
+  .nextbutton:hover {
+    background: #333;
+
+  }
+
+
+
+
+  /*** FONTS ***/
+  @import url(https://fonts.googleapis.com/css?family=Montserrat:900|Raleway:400,400i,700,700i);
+
+  /*** VARIABLES ***/
+  /* Colors */
+  /*** EXTEND ***/
+  /* box-shadow */
+  ol.gradient-list>li,
+  ol.gradient-list>li::before {
+    box-shadow: 0.25rem 0.25rem 0.6rem rgba(0, 0, 0, 0.05), 0 0.5rem 1.125rem rgba(75, 0, 0, 0.05);
+  }
+
+
+  /*** STYLE ***/
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+
+  main {
+    display: block;
+    margin: 0 auto;
+    max-width: 40rem;
+    padding: 1rem;
+  }
+
+  ol.gradient-list {
+    counter-reset: gradient-counter;
+    list-style: none;
+    margin: 1.75rem 0;
+    padding-left: 1rem;
+  }
+
+  ol.gradient-list>li {
+    /* background: white; */
+    background: none;
+    border-radius: 0 0.5rem 0.5rem 0.5rem;
+    counter-increment: gradient-counter;
+    margin-top: 1rem;
+    min-height: .5rem;
+    padding: 1rem 1rem 1rem 3rem;
+    position: relative;
+  }
+
+  ol.gradient-list>li::before,
+  ol.gradient-list>li::after {
+    background: linear-gradient(135deg, #adadad 0%, #e2e2e2 100%);
+    opacity: .1;
+    border-radius: 1rem 1rem 0 1rem;
+    content: '';
+    height: 3rem;
+    left: -1rem;
+    overflow: hidden;
+    position: absolute;
+    top: -1rem;
+    width: 3rem;
+  }
+
+  ol.gradient-list>li::before {
+    align-items: flex-end;
+    content: counter(gradient-counter);
+    color: #1d1f20;
+    display: flex;
+    font: 900 1.5em/1 'Montserrat';
+    justify-content: flex-end;
+    padding: 0.125em 0.25em;
+    z-index: 1;
+  }
+
+
+
+  ol.gradient-list>li+li {
+    margin-top: 0rem;
+  }
+
+
+  main {
+    /* border: 1px solid white;
+    border-radius: 10px; */
+    padding: calc(10px + 5%);
+  }
+
+
+  .bg-image {
+
+
+    /* Full height */
+    height: 100%;
+
+  }
+
+  /* Position text in the middle of the page/image */
+  .bg-text {
+    backdrop-filter: blur(8px);
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.6);
+    /* Black w/opacity/see-through */
+    color: white;
+    /* font-weight: bold; */
+    /* border: 3px solid #f1f1f1; */
+    /* position: absolute; */
+    top: 50%;
+    left: 50%;
+    /* transform: translate(-50%, -50%); */
+    z-index: 2;
+    width: 80%;
+    padding: 20px;
+    text-align: center;
+  }
+
+
+  .previewheader {
+    padding: 20px 20px;
+    background: #222;
+
+    /* color: #f1f1f1; */
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+  }
+
+  .sticky+.content {
+    padding-top: 102px;
+  }
+
+  /* The device with borders */
+  .tablet {
+    position: relative;
+    width: 768px;
+    height: 1024px;
+    margin: auto;
+    border: 16px rgb(82, 81, 81) solid;
+    border-top-width: 60px;
+    border-bottom-width: 60px;
+    border-radius: 36px;
+    -webkit-transform: scale(.9);
+    /* Scaled down for a better Try-it experience (change to 1 for full scale) */
+    transform: scale(.9);
+    /* Scaled down for a better Try-it experience (change to 1 for full scale) */
+  }
+
+  /* The horizontal line on the top of the device */
+  .tablet:before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 5px;
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgb(145, 145, 145);
+    border-radius: 10px;
+  }
+
+  /* The circle on the bottom of the device */
+  .tablet:after {
+    content: '';
+    display: block;
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    left: 50%;
+    bottom: -65px;
+    transform: translate(-50%, -50%);
+    background: rgb(117, 117, 117);
+    border-radius: 50%;
+  }
+
+
+  /* The laptop with borders */
+  .laptop {
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    -webkit-transform: scale(.6) translate(-50%);
+    /* Scaled down for a better Try-it experience (change to 1 for full scale) */
+    transform: scale(.6) translate(-50%);
+    /* Scaled down for a better Try-it experience (change to 1 for full scale) */
+    left: 50%;
+    position: absolute;
+    width: 1366px;
+    height: 800px;
+    border-radius: 6px;
+    border-style: solid;
+    border-color: rgb(155, 151, 151);
+    border-width: 24px 24px 80px;
+    background-color: rgb(228, 225, 225);
+
+  }
+
+  /* The keyboard of the laptop */
+  .laptop:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 1600px;
+    height: 60px;
+    margin: 80px 0 0 -110px;
+    background: black;
+    border-radius: 6px;
+  }
+
+  /* The top of the keyboard */
+  .laptop:before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 250px;
+    height: 30px;
+    bottom: -110px;
+    left: 50%;
+    -webkit-transform: translate(-50%);
+    transform: translate(-50%);
+    background: #f1f1f1;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    z-index: 1;
+  }
+
+  /* The screen (or content) of the device */
+  /* .laptop .content {
+    width: 1366px;
+    height: 800px;
+    overflow: hidden;
+    border: none;
+  } */
+
+  /* The screen (or content) of the device */
+  .tablet .content {
+    color: white;
+    /* width: 768px;
+    height: 1024px; */
+    /* background: white; */
+    margin: -1px;
+  }
+
+
+  .fade-in {
+    animation: fadeIn ease .5s;
+    -webkit-animation: fadeIn ease .5s;
+    -moz-animation: fadeIn ease .5s;
+    -o-animation: fadeIn ease .5s;
+    -ms-animation: fadeIn ease .5s;
+  }
+
+  .hideme {
+    opacity: 0;
+  }
+
+  #defaultCanvas0 {
+    display: none;
+  }
+
+
+
+  @media only screen and (max-width: 600px) {
+
+    .bg-text {
+      width: 100%;
+      border: none;
+    }
+
+
+    .search {
+      transition: all 0s ease;
+      display: none;
+    }
+
+    .searchmobile {
+      display: block;
+    }
+
+    .songsearchtittle {
+      font-size: calc(1em + 2vw);
+    }
+
+
+    .editor {
+      font-size: 17px;
+    }
+
+    .searchresultarea {
+      width: calc(90% + 50px);
+      margin-top: 10px;
+      border: none;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .searchresultarea>div {
+      padding-left: 0px;
+      font-size: 15px;
+    }
+
+    .previewtopic {
+      font-size: 15px;
+    }
+
+    .chorddiv {
+      padding: 3px;
+    }
+
+    .nonchorddiv {
+      padding: 3px;
+    }
+
+    .lds-roller {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+      z-index: 999;
+    }
+
+  }
+</style>
+
+<body class="w3-black">
+
+  <!-- Icon Bar (Sidebar - hidden on small screens) -->
+  <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+    <!-- Avatar image in top left corner -->
+    <!-- <img src="/w3images/avatar_smoke.jpg" style="width:100%"> -->
+    <a onclick="showpage('home')" href="#home" class="w3-bar-item w3-button w3-padding-large w3-black">
+      <i class="fa fa-home w3-xxlarge"></i>
+      <p>HOME</p>
+    </a>
+    <a onclick="showpage('search')" href="#search" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+      <i class="fa fa-search w3-xxlarge"></i>
+      <p>SEARCH</p>
+    </a>
+    <a onclick="showpage('editor')" href="#editor" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+      <i class="fa fa-sticky-note w3-xxlarge"></i>
+      <p>EDIRTOR</p>
+    </a>
+    <a onclick="showpage('preview')" href="#preview" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+      <i class="fa fa-eye w3-xxlarge"></i>
+      <p>PREVIEW</p>
+    </a>
+  </nav>
+
+  <!-- Navbar on small screens (Hidden on medium and large screens) -->
+  <div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
+    <div class="w3-bar w3-black w3-opacity w3-hover-opacity-off w3-center w3-small">
+      <a onclick="showpage('home')" href="#home" class="w3-bar-item w3-button" style="width:25% !important">Home</a>
+      <a onclick="showpage('search')" href="#search" class="w3-bar-item w3-button"
+        style="width:25% !important">SEARCH</a>
+      <a onclick="showpage('editor')" href="#editor" class="w3-bar-item w3-button"
+        style="width:25% !important">EDITOR</a>
+      <a onclick="showpage('preview')" href="#preview" class="w3-bar-item w3-button"
+        style="width:25% !important">PREVIEW</a>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="w3-padding-large" id="main">
+    <!-- Header/Home -->
+    <div id="homepage">
+      <header class="w3-container w3-padding-32 w3-center w3-black" id="home" style="opacity: 1; margin-bottom: 50px;">
+        <h1 class="w3-jumbo "> <img src="public/logo.jpg" alt="boy" class="w3-image"
+            style="width: calc(50% + 10px); margin-top: 30px; margin-bottom: 10px; filter:invert(100%); min-width: 200px; max-width: 500px; "
+            width="992" height="1108"><br><span>Busk King</span>
+        </h1>
+        <!-- <p class="w3-hide-small" style="position: absolute; top: 0;">Your Busking Assistant</p> -->
+        <p>Your Busking Assistant</p>
+        <!-- <img src="public/logo.jpg" alt="boy" class="w3-image"
+          style="width: calc(20% + 200px); margin-top: 30px; filter:invert(100%); max-width: 800px;" width="992"
+          height="1108"> -->
+      </header>
+
+      <!-- About Section -->
+
+      <!-- <img src="public/buskkingbg.jpg" style="width: 100%;"> -->
+      <div id="songlistarea" class="bg-image"
+        style='background: url("public/buskkingbg.jpg") no-repeat fixed center; background-size: auto; width: 100%; padding-top: 100px; padding-bottom: 100px;'>
+
+
+      </div>
+
+
+
+
+
+
+
+      <!-- Footer -->
+
+      <footer class="w3-content w3-padding-64 w3-text-grey w3-xlarge">
+        <hr style="width:200px" class="w3-opacity">
+        <a href="https://www.facebook.com/harry.chan.77128" target="_blank"><i
+            class="fa fa-facebook-official w3-hover-opacity"></i></a>
+        <a href="https://www.instagram.com/harry.kwan" target="_blank"><i
+            class="fa fa-instagram w3-hover-opacity"></i></a>
+        <a href="https://www.youtube.com/channel/UCesflgWO_9u1iQj9sovZnMw" target="_blank"><i
+            class="fa fa-youtube w3-hover-opacity"></i></a>
+        <p class="w3-medium">Made by Harry Kwan</p>
+        <!-- End footer -->
+      </footer>
+
+      <div class="nextbutton" onclick="showpage('search')"><span>❯</span></div>
+    </div>
+
+    <div id='searchpage' class="w3-container w3-padding-32 w3-center w3-black" style="margin-top: 20px;">
+      <h1 class="songsearchtittle">Search your song here</h1>
+      <div class="search">
+        <input onchange="searchsong('big')" id="searchsongbiginput" placeholder="Type in the song name" type="search"
+          class="search-box" />
+        <span class="search-button" onclick="searchsong('big')">
+          <span class="search-icon"></span>
+        </span>
+      </div>
+      <div class="searchmobile">
+        <input onchange="searchsong('small')" id="searchsongsmallinput" placeholder="Type in the song name" />
+        <a onclick="searchsong('small')" style="position: absolute;"
+          class="w3-bar-item w3-button w3-padding-16 w3-grey">
+          <i class="fa fa-search w3-large"></i>
+        </a>
+      </div>
+
+
+      <div class="tablet w3-hide-small">
+        <div class="content">
+          <div hidden id="searchresultarea" class="w3-content w3-padding-64 w3-text-white w3-xlarge  searchresultarea">
+          </div>
+        </div>
+      </div>
+
+      <div hidden id="searchresultarea_small"
+        class="w3-content w3-padding-64 w3-text-white w3-xlarge  searchresultarea  w3-hide-large">
+      </div>
+
+      <div id="loadingthing" hidden>
+        <div style="margin-top: 100px;" class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div id='editorpage' class="w3-container w3-padding-32  w3-black" style="margin-top: 20px;">
+      <div id="editor" class="editor">
+      </div>
+      <div class="nextbutton" onclick="showpage('preview')"><span>❯</span></div>
+    </div>
+
+    <div id='previewpage' class="w3-container w3-padding-32  w3-black" style="margin-top: 20px;">
+      <div class="previewheader">
+        <table>
+          <tr>
+            <td>
+              <span class="previewtopic" style="">KEY</span>
+            </td>
+            <td>
+              <div style="display: inline-block;" id="keybar">
+                <!-- <span>KEY</span> -->
+                <span>C</span>
+                <span>Db</span>
+                <span>D</span>
+                <span>Eb</span>
+                <span>E</span>
+                <span>F</span>
+                <span>F#</span>
+                <span>G</span>
+                <span>Ab</span>
+                <span>A</span>
+                <span>Bb</span>
+                <span>B</span>
+              </div>
+            </td>
+          </tr>
+          <tr style="margin-top: 10px;">
+
+            <td>
+
+              <span class="previewtopic" style="">FONT</span>
+            </td>
+            <td>
+              <span class="tunesizebut" onclick="tunefont(1)" style="">+</span>
+              <span class="tunesizebut" onclick="tunefont(-1)" style="">-</span>
+
+            </td>
+
+          </tr>
+          <tr style="margin-top: 10px;">
+
+            <td>
+
+              <span class="previewtopic" style="">SPACE</span>
+            </td>
+            <td>
+              <span class="tunesizebut" onclick="tunemargin(1)" style="">+</span>
+              <span class="tunesizebut" onclick="tunemargin(-1)" style="">-</span>
+
+            </td>
+
+          </tr>
+
+          <tr style="margin-top: 10px;">
+
+            <td>
+
+              <span class="previewtopic" style="">SPEED</span>
+            </td>
+            <td>
+              <span class="tunesizebut" onclick="decspeed()" style="">+</span>
+              <span class="tunesizebut" onclick="incspeed()" style="">-</span>
+
+            </td>
+
+          </tr>
+          <tr style="margin-top: 10px;">
+
+            <td>
+
+              <span class="previewtopic" style="">ROOM</span>
+            </td>
+            <td>
+              <span class="tunesizebut" onclick="createroom()" style="">+</span>
+              <span class="tunesizebut" onclick="joinroom()" style="">⇆</span>
+
+            </td>
+
+          </tr>
+          <tr style="margin-top: 10px;">
+
+            <td>
+
+              <span class="previewtopic" style="">Listen</span>
+            </td>
+            <td>
+              <span class="tunesizebut" onclick="startlisten()" style="">⚬</span>
+              <span class="tunesizebut" onclick="stoplisten()" style="">☐</span>
+
+            </td>
+
+          </tr>
+        </table>
+
+        <div id="outputarea"></div>
+      </div>
+      <div style="margin-top: 30px;" id="showchordarea"></div>
+      <div class="nextbutton" onclick="autoscrollstart()"><span id="scrollbutton">▼</span></div>
+
+    </div>
+
+
+
+
+    <!-- END PAGE CONTENT -->
+
+  </div>
+  <script src="public/sound.js"></script>
+  <script>
+    var knnClassifier = ml5.KNNClassifier();
+    let mic, fft, peakDetect, amplitude;
+
+    var finalspectrumlist = '';
+    var nowamp, locallowamp = 0,
+      localhighamp = 0,
+      oldamp;
+    var myframe = []; //volumn
+    var myframelength = 20;
+    var myframetotal = 0;
+    var ampslope = 0;
+    var nowchord;
+    var recordingbg = 0;
+    var lastchord, last2chord;
+    // var smoothframelength = 5;
+
+
+    function setup() {
+      mic = new p5.AudioIn();
+      mic.start();
+      fft = new p5.FFT();
+      fft.setInput(mic);
+      peakDetect = new p5.PeakDetect();
+      amplitude = new p5.Amplitude();
+      amplitude.setInput(mic)
+      nowamp = 0;
+    }
+
+    function checksound() {
+      let spectrum = fft.analyze();
+      peakDetect.update(fft);
+      beginShape();
+
+      for (i = 0; i < spectrum.length; i++) {
+        vertex(i, map(spectrum[i], 0, 255, height, 0));
+      }
+
+
+      var finalfreq = [];
+      for (var j = 0 + 1; j < spectrum.length; j++) {
+        finalfreq.push(spectrum[j] - spectrum[j - 1])
+      }
+
+      if (starttraining) {
+        addknn(finalfreq, nowchord)
+      } else if (recordingbg) {
+        addknn(finalfreq, 'bg')
+      } else {
+        testknn(finalfreq, function (result) {
+          if (result) {
+            const confi = result.confidencesByLabel;
+            var tablecontent = ''
+            for (var j in confi) {
+              tablecontent += "<tr>"
+              tablecontent += "<td>"
+              tablecontent += j
+              tablecontent += "</td>"
+              tablecontent += "<td>"
+              tablecontent += confi[j]
+              tablecontent += "</td>"
+              tablecontent += "</tr>"
+            }
+            // document.getElementById('outputarea').innerHTML = "<h1 style='margin: 10px;'>" +
+            //   result.label +
+            //   "</h1>" + "<table>" + tablecontent + "</table>";
+
+            if (!result.label == lastchord && result.label == last2chord)
+              return
+
+            console.log(result.label)
+            if (allrecord.length == 0 || result.label != allrecord[allrecord.length - 1])
+              allrecord.push(result.label)
+            if (allchorddivchord[nowposition] == result.label) {
+              nowposition++
+            } else if (allchorddivchord[nowposition + 1] == result.label) {
+              nowposition += 2
+            }
+
+            // console.log(chordpostorow[nowposition], nowposition)
+
+            var myallchord = document.getElementsByClassName('chorddiv')
+            if (chordpostorow[nowposition] > 0) {
+              myallchord[chordpostorow[nowposition] - 1].scrollIntoView()
+            } else {
+              myallchord[0].scrollIntoView()
+            }
+
+            if (nowposition > 0) {
+              myallchord[chordpostorow[nowposition - 1]].style.borderLeft = '1px solid red'
+            } else {
+              myallchord[0].style.borderLeft = '1px solid red'
+            }
+
+
+            last2chord = lastchord
+            lastchord = result.label
+
+            // console.log(nowposition, allchorddivchord[nowposition], result.label, chordpostorow[nowposition],
+            // myallchord[chordpostorow[nowposition]])
+            // console.log(result)
+          }
+        })
+
+
+      }
+
+
+
+      endShape();
+    }
+
+
+    function draw() {
+      if (!listening) return
+      background(200);
+      let level = amplitude.getLevel();
+      let tempamp = map(level, 0, 1, 0, 70);
+      myframe.push(tempamp)
+      myframetotal += tempamp
+      if (myframe.length > myframelength) {
+        myframetotal -= myframe.shift()
+      }
+      nowamp = Math.round(myframetotal / myframelength);
+
+      if (myframe.length == myframelength) {
+        if (oldamp > nowamp) {
+          locallowamp = nowamp
+          if (ampslope == 0 || ampslope == 1) {
+            if (localhighamp - locallowamp > 3 || peakDetect.isDetected) {
+              checksound()
+            }
+          }
+          ampslope = -1
+        } else if (oldamp < nowamp) {
+          localhighamp = nowamp
+          ampslope = 1
+        } else {
+          ampslope = 0
+        }
+        oldamp = nowamp;
+      }
+
+      if (recordingbg)
+        checksound()
+
+
+    }
+
+    var listening = 0
+    var nowposition = 0;
+    var allrecord = []
+
+    function startlisten() {
+      startaudio()
+      getchorddivct()
+      allrecord = []
+      listening = 1
+      nowposition = 0;
+
+      for (let tempnowchord in nowallchord) {
+        if (!knnClassifier.getCountByLabel()[tempnowchord]) {
+          getchorddata(tempnowchord, function (mychord, x) {
+            let tempdata = JSON.parse(x).map(j => j.split(',').map(y => +y))
+            for (var j = 0; j < tempdata.length; j++) {
+              // console.log(mychord, tempdata[j])
+              knnClassifier.addExample(tempdata[j], mychord)
+            }
+          })
+        }
+
+      }
+      if (!knnClassifier.getCountByLabel()['bg']) {
+        getchorddata('bg', function (mychord, x) {
+          let tempdata = JSON.parse(x).map(j => j.split(',').map(y => +y))
+          for (var j = 0; j < tempdata.length; j++) {
+            // console.log(mychord, tempdata[j])
+            knnClassifier.addExample(tempdata[j], mychord)
+          }
+          alert('ok')
+        })
+      }
+    }
+
+    var allchorddivchord = []
+    var allchorddivct = []
+    var chordpostorow = []
+
+    function getchorddivct() {
+      var myallchord = document.getElementsByClassName("chorddiv");
+      allchorddivct = []
+      for (var j = 0; j < myallchord.length; j++) {
+        allchorddivct[j] = 0
+        rowtochord(myallchord[j].innerHTML).map(x => {
+          if (x && x != 'nbsp') //tempans.push(x)
+            allchorddivct[j]++
+        })
+        // allchorddivchord.push(tempans)
+      }
+      chordpostorow = []
+      for (var j = 0; j < allchorddivct.length; j++) {
+        for (var k = 0; k < allchorddivct[j]; k++) {
+          chordpostorow.push(j)
+        }
+      }
+    }
+
+    function stoplisten() {
+      listening = 0
+      var myallchord = document.getElementsByClassName('chorddiv')
+      for (var j = 0; j < myallchord.length; j++) {
+        myallchord[j].style.border = 'none'
+      }
+    }
+
+    function download(filename, text) {
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+    }
+
+    var starttraining = 0
+
+    function nextonedownload() {
+      nowchord = prompt("Chord?", '')
+      if (!nowchord)
+        return
+      starttraining = 1;
+      tempsample = []
+    }
+
+    function recordbg() {
+      recordingbg = 1;
+      tempsample = []
+    }
+
+    function stoprecordbg() {
+      recordingbg = 0;
+      download('bg' + '.js', 'var file_' + 'bg' + ' = ' + JSON.stringify(tempsample))
+    }
+
+    function nextonestop() {
+      starttraining = 0;
+      download(nowchord + '.js', 'var file_' + nowchord + ' = ' + JSON.stringify(tempsample))
+    }
+
+    function startaudio() {
+      getAudioContext().resume()
+    }
+
+    function download(filename, text) {
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+    }
+
+
+    function savefile() {
+      const myfile = prompt("file name: ", "");
+      if (myfile) {
+        download(myfile + '.js', 'var readjsfile = ' + JSON.stringify(tempsample))
+      }
+
+    }
+
+
+    function loadknn(x, callback) {
+      knnClassifier.load(x, callback);
+
+    }
+
+    function saveknn(x) {
+      return knnClassifier.save(x);
+    }
+
+
+    function addknn(features, label) {
+      console.log(label)
+      tempsample.push(features.join(','))
+      return knnClassifier.addExample(features, label);
+    }
+
+    function testknn(x, callback) {
+      // Use KNN Classifier to classify these features
+      knnClassifier.classify(x, (err, result) => {
+        callback(result); // result.label is the predicted label
+      });
+    }
+  </script>
+
+
+  <script>
+    window.onscroll = function () {
+      myHeaderFunction()
+    };
+
+    var header = document.getElementsByClassName("header")[0];
+    var sticky = header.offsetTop;
+
+    function myHeaderFunction() {
+      // if (window.pageYOffset > sticky) {
+      //   header.classList.add("sticky");
+      // } else {
+      //   header.classList.remove("sticky");
+      // }
+      $(window).scroll(function () {
+        $("#home").css("opacity", 1 - $(window).scrollTop() / $('#home').height());
+      });
+    }
+  </script>
+
+  <script>
+    $(function () { // $(document).ready shorthand
+      $('.monster').fadeIn('slow');
+    });
+
+    $(document).ready(function () {
+
+      /* Every time the window is scrolled ... */
+      $(window).scroll(function () {
+
+        /* Check the location of each desired element */
+        $('.hideme').each(function (i) {
+
+          var bottom_of_object = $(this).position().top // + $(this).outerHeight();
+          var bottom_of_window = $(window).scrollTop() + $(window).height();
+
+          /* If the object is completely visible in the window, fade it it */
+          if (bottom_of_window > bottom_of_object) {
+
+            $(this).animate({
+              'opacity': '1'
+            }, 1500);
+
+          }
+
+        });
+
+      });
+
+    });
+  </script>
+
+  <script>
+    var mykeybar = document.getElementById("keybar").getElementsByTagName('span');
+    var notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+    var numberlist = '0123456789';
+    var letterlist = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+    var autoscrollmode = 'constant'
+
+    for (var j = 0; j < mykeybar.length; j++) {
+      mykeybar[j].classList.add('keybarnormal');
+      // mykeybar[j].classList.add('originalkey');
+      mykeybar[j].onclick = function () {
+        for (var k = 0; k < mykeybar.length; k++) {
+          mykeybar[k].classList.add('keybarnormal');
+          mykeybar[k].classList.remove('keybarselect');
+        }
+        choosekey(this);
+      }
+    }
+
+    function checkifchord(x) {
+      if (x == '')
+        return 0;
+      for (var j = 0; j < x.length; j++) {
+        if (j != 0 && x[j] == 'm') {
+          if (j + 2 < x.length)
+            if (x[j + 1] == 'a' && x[j + 2] == 'j')
+              j = j + 2;
+        } else if (j != 0 && x[j] == 's') {
+          if (j + 2 < x.length) {
+            if (x[j + 1] == 'u' && x[j + 2] == 's')
+              j = j + 2;
+            else
+              return -1;
+          } else
+            return -1;
+        } else if (j != 0 && x[j] == 'd') {
+          if (j + 2 < x.length) {
+            if (x[j + 1] == 'i' && x[j + 2] == 'm')
+              j = j + 2;
+            else
+              return -1;
+          } else
+            return -1;
+        } else if (j != 0 && x[j] == 'a') {
+          if (j + 2 < x.length) {
+            if (x[j + 1] == 'd' && x[j + 2] == 'd')
+              j = j + 2;
+            else
+              return -1;
+          } else
+            return -1;
+        } else if (j == 0 && notes.includes(x[j])) {
+          //ok
+        } else if (j != 0 && x[j] == 'b' || j != 0 && x[j] == '#' || j != 0 && numberlist.indexOf(x[j]) !== -1) {
+          //ok
+        } else {
+          return -1;
+        }
+      }
+      return 1;
+    }
+
+    function rowtochord(x) {
+      // console.log(x)
+      var temp = x;
+      for (var j = 0; j < temp.length; j++) {
+        if (numberlist.indexOf(temp[j]) == -1 && letterlist.indexOf(temp[j]) == -1 && temp[j] != '#' && temp[j] !=
+          ' ') {
+          // console.log(j+' '+temp[j])
+          temp = temp.replace(x[j], ' ');
+        }
+      }
+      // console.log(temp)
+      return temp.split(' ');
+    }
+
+    function checkchordrow(x) {
+
+      var myscore = 0;
+      var myrow = rowtochord(x);
+      // var notemptyct = 0;
+      // var raw = rowtochord(x.split(' ').join('').split(' ').join(''));
+      // for (var j=0; j<raw.length; j++){
+      //     notemptyct++
+      // }
+      // console.log(x.split(' ').join(''),raw,notemptyct)
+
+      for (var j = 0; j < myrow.length; j++) {
+        // console.log(myrow[j]+' '+checkifchord(myrow[j]));
+        myscore += checkifchord(myrow[j]);
+        // myscore += checkifchord(myrow[j]);
+      }
+      // console.log(myscore/notemptyct);
+      if (myscore > 0) {
+        // if (notemptyct>1&&myscore/notemptyct>0.4){
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+
+    function choosekey(x) {
+      // console.log(notestolocation(x.innerHTML)-nowkey);
+
+      if (nowkey != -1) {
+        x.classList.remove('keybarnormal');
+        x.classList.add('keybarselect');
+        if (notestolocation(x.innerHTML) - nowkey != 0) {
+          var myallchord = document.getElementsByClassName("chorddiv");
+          for (var j = 0; j < myallchord.length; j++) {
+            var mychordrow = rowtochord(myallchord[j].innerHTML);
+            var nowindex = 0;
+            var firstplace = [];
+            var secondplace = [];
+            // console.log(mychordrow);
+            // console.log(myallchord[j].innerHTML.length);
+            for (var k = 0; k < mychordrow.length; k++) {
+              if (mychordrow[k] != '' && checkifchord(mychordrow[k]) > 0) {
+                // mychordrow[k]=mychordrow[k].replace('m',''); //seems wrong
+                // console.log(k+' '+mychordrow[k]);
+                if (mychordrow[k].indexOf('b') != -1) {
+                  firstplace[k] = myallchord[j].innerHTML.indexOf(mychordrow[k][0], nowindex);
+                  nowindex = firstplace[k] + 1;
+                  secondplace[k] = myallchord[j].innerHTML.indexOf('b', nowindex);
+                  nowindex = secondplace[k] + 1;
+                } else if (mychordrow[k].indexOf('#') != -1) {
+                  firstplace[k] = myallchord[j].innerHTML.indexOf(mychordrow[k][0], nowindex);
+                  nowindex = firstplace[k] + 1;
+                  secondplace[k] = myallchord[j].innerHTML.indexOf('#', nowindex);
+                  nowindex = secondplace[k] + 1;
+                } else {
+                  firstplace[k] = myallchord[j].innerHTML.indexOf(mychordrow[k][0], nowindex);
+                  secondplace[k] = firstplace[k];
+                  nowindex = secondplace[k] + 1;
+                }
+              }
+
+            }
+            // console.log(firstplace);
+            // console.log(secondplace);
+            var tempans = '';
+            nowindex = 0;
+            for (var k = 0; k < mychordrow.length; k++) {
+              if (mychordrow[k] != '' && checkifchord(mychordrow[k]) > 0) {
+                var newchord;
+
+                if (firstplace[k] == secondplace[k]) {
+                  newchord = locationtonotes((notestolocation(x.innerHTML) - nowkey + notestolocation(myallchord[j]
+                    .innerHTML[firstplace[k]]) + 12) % 12);
+                  tempans += myallchord[j].innerHTML.substring(nowindex, firstplace[k]) + newchord;
+                  nowindex = firstplace[k] + 1;
+                } else {
+                  newchord = locationtonotes((notestolocation(x.innerHTML) - nowkey + notestolocation(myallchord[j]
+                    .innerHTML[firstplace[k]] + myallchord[j].innerHTML[secondplace[k]]) + 12) % 12);
+                  // console.log(myallchord[j].innerHTML[firstplace[k]]+myallchord[j].innerHTML[secondplace[k]]+' '+newchord);
+                  tempans += myallchord[j].innerHTML.substring(nowindex, firstplace[k]) + newchord[0];
+                  nowindex = firstplace[k] + 1;
+                  if (newchord[1])
+                    tempans += myallchord[j].innerHTML.substring(nowindex, secondplace[k]) + newchord[1];
+                  else
+                    tempans += myallchord[j].innerHTML.substring(nowindex, secondplace[k]);
+                  nowindex = secondplace[k] + 1;
+                }
+              }
+
+            }
+            myallchord[j].innerHTML = tempans + myallchord[j].innerHTML.substring(nowindex);
+          }
+          nowkey = notestolocation(x.innerHTML);
+        }
+
+      }
+
+    }
+
+    function notestolocation(x) {
+      if (x == 'C' || x == 'B#')
+        return 0;
+      else if (x == 'C#' || x == "Db")
+        return 1;
+      else if (x == 'D')
+        return 2;
+      else if (x == 'D#' || x == 'Eb')
+        return 3;
+      else if (x == 'E' || x == 'Fb')
+        return 4;
+      else if (x == 'F' || x == 'E#')
+        return 5;
+      else if (x == 'F#' || x == 'Gb')
+        return 6;
+      else if (x == 'G')
+        return 7;
+      else if (x == 'G#' || x == 'Ab')
+        return 8;
+      else if (x == 'A')
+        return 9;
+      else if (x == 'A#' || x == 'Bb')
+        return 10;
+      else if (x == 'B' || x == 'Cb')
+        return 11;
+    }
+
+    function locationtonotes(x) {
+      var notes = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
+      return notes[x];
+    }
+
+
+    var nowkey = -1;
+
+
+    var nowallchord = {}
+
+    function findkey(x) {
+      var majchordct = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      var minchordct = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      nowallchord = {}
+      var tempallchord = []
+      for (var j = 0; j < x.length; j++) {
+        var tempchord = x[j];
+        tempchord = tempchord.split('maj').join('');
+        tempchord = tempchord.split('dim').join('');
+        tempchord = tempchord.split('sus').join('');
+        tempchord = tempchord.split('add').join('');
+        var finalchord = tempchord[0];
+        // nowallchord.push(finalchord)
+        if (tempchord.indexOf("#") != -1)
+          finalchord += '#';
+        else if (tempchord.indexOf("b") != -1)
+          finalchord += 'b';
+        if (tempchord.indexOf('m') != -1) {
+          minchordct[notestolocation(finalchord)]++;
+          nowallchord[finalchord + 'm'] = 1
+          tempallchord.push(finalchord + 'm')
+        } else {
+          majchordct[notestolocation(finalchord)]++;
+          nowallchord[finalchord] = 1
+          tempallchord.push(finalchord)
+        }
+        // console.log(tempchord+' '+finalchord+' '+notestolocation(tempchord));
+
+      }
+      allchorddivchord = tempallchord
+
+      var detectkey = 0;
+      var minchord = 0;
+      var maxscore = 0;
+      for (var j = 0; j <= 11; j++) {
+        var tempscore = 0;
+        tempscore += majchordct[j] + majchordct[(j + 5) % 12] + majchordct[(j + 7) % 12]; //+ majchordct[(j+11)%12];
+        tempscore += minchordct[(j + 2) % 12] + minchordct[(j + 4) % 12] + minchordct[(j + 9) % 12];
+        if (tempscore > maxscore) {
+          maxscore = tempscore;
+          detectkey = j;
+          minchord = 0;
+        }
+        var tempscore2 = 0;
+        tempscore2 += majchordct[(j + 4) % 12] + majchordct[(j + 8) % 12] + majchordct[(j + 10) %
+          12]; //+ majchordct[(j+2)%12];
+        tempscore2 += minchordct[j] + minchordct[(j + 5) % 12] + minchordct[(j + 7) % 12];
+        // if (tempscore2>maxscore){
+        // 	maxscore = tempscore2;
+        // 	detectkey = j;
+        // 	minchord = 1;
+        // }
+        // console.log(j+' '+tempscore);
+        // console.log(j+'m '+tempscore2)
+      }
+      // console.log(detectkey+' '+minchord);
+      nowkey = detectkey;
+      mykeybar[detectkey].click();
+      return detectkey;
+    }
+
+    var originalkey;
+
+    function chorddone() {
+      var mytext = quill.getText(quill.getLength).split('\n')
+      // console.log(mytext)
+      var myoutput = document.getElementById("showchordarea");
+      myoutput.innerHTML = '';
+      var mychordlist = [];
+      var emptylinect = 0;
+      for (var j = 1; j < mytext.length; j++) {
+        if (mytext[j - 1]) {
+          if (mytext[j - 1].trim() != '' && mytext[j].trim() == '') {
+            emptylinect++;
+          }
+        } else {
+          emptylinect++;
+        }
+
+      }
+
+      // console.log(emptylinect/mytext.length)
+      if (mytext.length > 0 && (emptylinect / mytext.length) > 0.5) {
+        for (var j = 1; j < mytext.length; j++) {
+          if (mytext[j - 1]) {
+            if (mytext[j - 1].trim() != '' && mytext[j].trim() == '') {
+              mytext[j] = undefined
+            }
+          }
+        }
+      }
+
+      // console.log(mytext)
+
+      for (var j = 1; j < mytext.length; j++) {
+        if (mytext[j - 1] != undefined && mytext[j] != undefined) {
+          if (mytext[j - 1].trim() == '' && mytext[j].trim() == '') {
+            mytext[j - 1] = undefined
+          }
+        }
+      }
+
+
+
+      // console.log(mytext)
+
+      for (var j = 0; j < mytext.length; j++) {
+        // console.log(j)
+        if (mytext[j] == undefined)
+          continue
+
+        // console.log('through')
+        // console.log(mytext[j])
+        var mybackgroundcolor = 'class="nonchorddiv"';
+        if (mytext[j].trim() == '') {
+          mybackgroundcolor = 'class="emptyline"'
+        } else if (checkchordrow(mytext[j])) {
+          //console.log(mytext[j]);
+          // mybackgroundcolor = ' style="background-color: #333333;" ';
+          mybackgroundcolor = 'class="chorddiv"';
+          var tempchordrow = rowtochord(mytext[j]);
+          for (var k = 0; k < tempchordrow.length; k++) {
+            if (checkifchord(tempchordrow[k]) > 0) {
+              mychordlist[mychordlist.length] = tempchordrow[k];
+            }
+          }
+        }
+        myoutput.innerHTML += '<pre ' + mybackgroundcolor + ' style="">' + mytext[j] + '</pre>';
+        if (mytext[j] == '')
+          myoutput.innerHTML += '<br>';
+      }
+      myoutput.innerHTML += '<br><br>';
+
+      originalkey = findkey(mychordlist);
+      for (var j = 0; j < mykeybar.length; j++) {
+        if (mykeybar[j].classList.contains('originalkey'))
+          mykeybar[j].classList.remove('originalkey');
+      }
+      mykeybar[originalkey].classList.add('originalkey');
+      // document.cookie = 'editorarea='+document.getElementById("mytext").value;
+      // console.log(document.getElementById("mytext").value);
+      // setCookie('editorarea',document.getElementById("mytext").value.split("\n").join("|n"),300);
+      tunefont(0)
+      tunemargin(0)
+    }
+
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      var expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      // console.log(cvalue);
+      // console.log(cvalue.length);
+      // console.log(document.cookie);
+    }
+
+    function showchordonly() {
+      var myallchordtag = document.getElementsByClassName("chorddiv");
+      for (var j = 0; j < myallchordtag.length; j++) {
+        myallchordtag[j].hidden = false;
+      }
+      var myallnonchordtag = document.getElementsByClassName("nonchorddiv");
+      for (var j = 0; j < myallnonchordtag.length; j++) {
+        myallnonchordtag[j].hidden = true;
+      }
+    }
+
+    function showlyriconly() {
+      var myallchordtag = document.getElementsByClassName("chorddiv");
+      for (var j = 0; j < myallchordtag.length; j++) {
+        myallchordtag[j].hidden = true;
+      }
+      var myallnonchordtag = document.getElementsByClassName("nonchorddiv");
+      for (var j = 0; j < myallnonchordtag.length; j++) {
+        myallnonchordtag[j].hidden = false;
+      }
+    }
+
+    function showchordandlyric() {
+      var myallchordtag = document.getElementsByClassName("chorddiv");
+      for (var j = 0; j < myallchordtag.length; j++) {
+        myallchordtag[j].hidden = false;
+      }
+      var myallnonchordtag = document.getElementsByClassName("nonchorddiv");
+      for (var j = 0; j < myallnonchordtag.length; j++) {
+        myallnonchordtag[j].hidden = false;
+      }
+    }
+
+    var myautoscroll;
+    var nowscrollspeed = 100
+
+    function autoscrollstart() {
+      if (myautoscroll) {
+        autoscrollstop();
+      } else {
+        // console.log('start');
+        myautoscroll = setInterval(function () {
+          window.scrollBy(0, 1);
+        }, nowscrollspeed);
+        document.getElementById("scrollbutton").innerHTML = '◼';
+      }
+
+    }
+
+    function autoscrollstop() {
+      // console.log('stop');
+      if (myautoscroll) {
+        clearInterval(myautoscroll);
+        myautoscroll = undefined;
+        document.getElementById("scrollbutton").innerHTML = "▼";
+      }
+
+    }
+
+    function incspeed() {
+      // document.getElementById("scrollspeedshow").innerHTML = parseInt(document.getElementById("scrollspeedshow").innerHTML)+10;
+      nowscrollspeed += 10
+      if (myautoscroll) {
+        autoscrollstop();
+        autoscrollstart();
+      }
+    }
+
+    function decspeed() {
+      // if (parseInt(document.getElementById("scrollspeedshow").innerHTML)-10>0){
+      if (nowscrollspeed - 10 > 0) {
+        // document.getElementById("scrollspeedshow").innerHTML = parseInt(document.getElementById("scrollspeedshow").innerHTML)-10;
+        nowscrollspeed -= 10
+        if (myautoscroll) {
+          autoscrollstop();
+          autoscrollstart();
+        }
+      }
+    }
+
+
+
+    const allpage = ['home', 'search', 'editor', 'preview']
+    const getwebsiteserver = 'getchordpage/'
+    const googleitserver = 'googleit/'
+    const getchordserver = 'getchorddata/'
+    const getsingersonglistserver = 'getsingersonglist/'
+    const getsingernameserver = 'getsingernamelist/'
+    const getallsonglistserver = 'getallsonglist/'
+    var Delta = Quill.import('delta');
+    var quill = new Quill('#editor', {
+      placeholder: 'Paste your chord sheet here / use the search function on previous page',
+      theme: 'bubble'
+    });
+
+    var change = new Delta();
+    quill.on('text-change', function (delta) {
+      change = change.compose(delta);
+    });
+
+
+    startpage()
+
+    function startpage() {
+      $('.search-button').click(function () {
+        $(this).parent().addClass('open');
+      });
+      showpage('home')
+
+      var nowpage = window.location.href.split("#")[1]
+      if (nowpage) {
+        showpage(nowpage)
+      }
+
+      getallsonglist(function (result) {
+        result = JSON.parse(result)
+        // console.log(result)
+        document.getElementById('songlistarea').innerHTML = '';
+        tempshowresult = ''
+        for (var j in result) {
+          var tempol = ''
+          if (result[j].length > 0) {
+            for (var k = 0; k < result[j].length; k++) {
+              const templi = '<li onclick="autosearchsong(this)">' + result[j][k] + '</li>'
+              tempol += templi
+            }
+            const tempsongrank =
+              `<main class="bg-text hideme" style="margin-bottom: 100px; ">
+                <h1 style="margin-bottom: 50px; border-bottom: 1px solid grey ; padding-bottom: 10px;">` +
+              'TOP OF ' + j.split('_songlist')[0].split('_').join(' ').toUpperCase() +
+              `</h1>
+                <ol class="gradient-list" style="max-height: 500px; overflow-y: scroll; overflow-x: hidden;">
+                  ` + tempol + `</ol>
+              </main>`
+            tempshowresult += tempsongrank
+          }
+        }
+
+        document.getElementById('songlistarea').innerHTML = tempshowresult
+
+      })
+
+      seteditortext('Paste your chord here')
+      quill.on('text-change', function (delta, oldDelta, source) {
+        // if (source == 'api') {
+        //   console.log("An API call triggered this change.");
+        // } else if (source == 'user') {
+        //   console.log("A user action triggered this change.");
+        // }
+
+      });
+    }
+
+    function showpage(x) {
+      for (var j = 0; j < allpage.length; j++) {
+        document.getElementById(allpage[j] + 'page').hidden = true;
+      }
+      document.getElementById(x + 'page').hidden = false;
+
+      var navbar = document.getElementsByTagName('nav')[0];
+      navbar = navbar.getElementsByTagName('a');
+      for (var j = 0; j < navbar.length; j++) {
+        if (navbar[j].classList.contains('w3-black')) {
+          navbar[j].classList.remove('w3-black')
+          navbar[j].classList.add('w3-hover-black')
+        }
+        if (navbar[j].href.split('#')[1] == x) {
+          navbar[j].classList.add('w3-black')
+        }
+      }
+
+      if (x == 'preview') {
+        chorddone()
+      }
+
+      autoscrollstop()
+    }
+
+
+
+    // Save periodically
+    setInterval(function () {
+      if (change.length() > 0) {
+        console.log('Saving changes', change);
+        autosave()
+        change = new Delta();
+      }
+    }, 5 * 1000);
+
+    // Check for unsaved data
+    window.onbeforeunload = function () {
+      if (change.length() > 0) {
+        return 'There are unsaved changes. Are you sure you want to leave?';
+      }
+    }
+
+
+    function searchwebsite(mysite, callback) {
+      mysite = mysite.split('/').join('|')
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          callback(xhttp.responseText)
+        }
+      };
+      xhttp.open("GET", getwebsiteserver + mysite, true);
+      xhttp.send();
+    }
+
+    function getchorddata(mychord, callback) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          callback(mychord, xhttp.responseText)
+        }
+      };
+      xhttp.open("GET", getchordserver + mychord, true);
+      xhttp.send();
+    }
+
+    function googleit(mysearchbody, callback) {
+      mysearchbody = mysearchbody.split('/').join(' ')
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          callback(xhttp.responseText)
+        }
+      };
+      xhttp.open("GET", googleitserver + mysearchbody, true);
+      xhttp.send();
+    }
+
+
+    function getallsonglist(callback) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          callback(xhttp.responseText)
+        }
+      };
+      xhttp.open("GET", getallsonglistserver, true);
+      xhttp.send();
+    }
+
+    function getsingersonglist(x, callback) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          callback(xhttp.responseText)
+        }
+      };
+      xhttp.open("GET", getsingersonglistserver + x, true);
+      xhttp.send();
+    }
+
+    function getsingername(x, callback) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          callback(xhttp.responseText)
+        }
+      };
+      xhttp.open("GET", getsingernameserver + x, true);
+      xhttp.send();
+    }
+
+
+    var nowsize = 'big'
+
+    function searchsong(x) {
+      nowsize = x
+      var tempinputvalue = document.getElementById('searchsong' + x + 'input').value
+      if (tempinputvalue) {
+        document.getElementById('loadingthing').hidden = false
+        document.getElementById('searchresultarea').innerHTML = ''
+        document.getElementById('searchresultarea_small').innerHTML = ''
+        googleit(tempinputvalue, function (x) {
+          showgoogleresult(x)
+          document.getElementById('searchresultarea').hidden = false
+          document.getElementById('searchresultarea_small').hidden = false
+        })
+
+        getsingersonglist(tempinputvalue, function (x) {
+          if (x) {
+            console.log(x)
+          }
+        })
+
+      }
+
+
+    }
+
+
+    function autosearchsong(x) {
+      document.getElementById('searchsongbiginput').value = x.innerText
+      document.getElementById('searchsongsmallinput').value = x.innerText
+      showpage('search')
+      searchsong('big')
+      document.getElementsByClassName('songsearchtittle')[0].scrollIntoView()
+    }
+
+
+    function checkiflinksupport(x) {
+      var allsupportlink = [
+        "polygonguitar.blogspot.com",
+        "daydayguitar.blogspot.com",
+        "blog.xuite.net",
+        "guitarians.com/chord",
+        "91pu.com",
+        "tabs.ultimate-guitar.com",
+        "chords-and-tabs.net",
+        "polygon.guitars",
+        'chord4.com/tabs'
+      ]
+      for (var j = 0; j < allsupportlink.length; j++) {
+        if (x.indexOf(allsupportlink[j]) != -1) {
+          return 1
+        }
+      }
+      return 0
+    }
+
+    function showgoogleresult(x) {
+      document.getElementById('searchresultarea').innerHTML = ''
+      document.getElementById('searchresultarea_small').innerHTML = ''
+      var tempalllink = JSON.parse(x)
+      for (var j = 0; j < tempalllink.length; j++) {
+        if (checkiflinksupport(tempalllink[j].link)) {
+          if (nowsize == 'big')
+            document.getElementById('searchresultarea').innerHTML += "<div onclick='gotolink(this)'>" + tempalllink[j]
+            .title + "<span hidden>" + tempalllink[j].link + "</span>" + "</div>"
+          else if (nowsize == 'small')
+            document.getElementById('searchresultarea_small').innerHTML += "<div onclick='gotolink(this)'>" +
+            tempalllink[j].title + "<span hidden>" + tempalllink[j].link + "</span>" + "</div>"
+        } else {
+
+        }
+
+
+      }
+      document.getElementById('loadingthing').hidden = true
+    }
+
+    function gotolink(x) {
+      var mylink = x.getElementsByTagName('span')[0].innerHTML
+      document.getElementById('loadingthing').hidden = false
+      document.getElementById('searchresultarea').hidden = true
+      searchwebsite(mylink, function (x) {
+        if (x == 'server error') {
+          alert('server error, please try again')
+        } else {
+          seteditortext(x)
+          document.getElementById('loadingthing').hidden = true
+          document.getElementById('searchresultarea').hidden = false
+          document.getElementById('searchresultarea_small').hidden = false
+          showpage('editor')
+        }
+
+      })
+    }
+
+    function seteditortext(x) {
+      quill.deleteText(0, quill.getLength())
+      quill.insertText(0, x);
+    }
+
+    function geteditortext() {
+      return quill.getContents();
+    }
+
+    function autosave() {
+
+    }
+
+    var nowfontsize = 15;
+
+    function tunefont(x) {
+      nowfontsize += x
+      var all = document.getElementsByClassName('chorddiv');
+      for (var i = 0; i < all.length; i++) {
+        all[i].style.fontSize = (nowfontsize) + 'px';
+      }
+      all = document.getElementsByClassName('nonchorddiv');
+      for (var i = 0; i < all.length; i++) {
+        all[i].style.fontSize = (nowfontsize) + 'px';
+      }
+      return (nowfontsize) + 'px'
+    }
+
+    var nowmargin = 4;
+
+    function tunemargin(x) {
+      nowmargin += x
+      var all = document.getElementsByClassName('chorddiv');
+      for (var i = 0; i < all.length; i++) {
+        all[i].style.margin = (nowmargin) + 'px 0';
+      }
+      all = document.getElementsByClassName('nonchorddiv');
+      for (var i = 0; i < all.length; i++) {
+        all[i].style.margin = (nowmargin) + 'px 0';
+      }
+      all = document.getElementsByClassName('emptyline');
+      for (var i = 0; i < all.length; i++) {
+        all[i].style.margin = (nowmargin) + 'px 0';
+      }
+      return (nowmargin) + 'px'
+    }
+  </script>
+
+  <!-- <script src="/public/socket.io.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script>
+    const socket = io(); // TIP: io() with no args does auto-discovery
+
+    // const socket = io.connect('http://localhost');
+
+
+    socket.on('connect', () => { // TIP: you can avoid listening on `connect` and listen on events directly too!
+      // socket.emit('ferret', 'tobi', 'woot', (data) => { // args are sent in order to acknowledgement function
+      //   console.log(data); // data will be 'tobi says woot'
+      // });
+    });
+
+
+    var roomhost = ''
+
+    function createroom() {
+      var temproomhost = prompt("Room Name?", '')
+      if (temproomhost) {
+        roomhost = temproomhost
+      }
+    }
+
+    function joinroom() {
+      var tempnowroom = prompt("Room Name?", '')
+      if (tempnowroom) {
+        roomhost = ''
+        socket.on(tempnowroom, (data) => {
+          console.log(data);
+          scrollsync(data)
+        });
+      }
+    }
+
+    var isInViewport = function (elem) {
+      var bounding = elem.getBoundingClientRect();
+      return (
+        bounding.top >= 0 &&
+        bounding.left >= 0 &&
+        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+      );
+    };
+
+    window.addEventListener('scroll', function () {
+      var allchorddiv = document.getElementsByClassName('chorddiv');
+      if (allchorddiv.length > 0) {
+        var nowviewindex;
+        for (var j = 0; j < allchorddiv.length; j++) {
+          if (isInViewport(allchorddiv[j])) {
+            nowviewindex = j
+            break;
+          }
+        }
+        if (roomhost) {
+          console.log(nowviewindex)
+          socket.emit(roomhost, {
+            chordindex: nowviewindex
+          });
+
+        }
+        // console.log(nowviewindex)
+        // console.log(allchorddiv[nowviewindex])
+      }
+
+
+    })
+
+    function scrollsync(data) {
+      var allchorddiv = document.getElementsByClassName('chorddiv');
+      console.log(data)
+      allchorddiv[data.chordindex].scrollIntoView()
+    }
+  </script>
+
+
+
+
+</body>
+
+</html>
